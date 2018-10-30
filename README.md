@@ -1,11 +1,6 @@
-# aurelia-skeleton-plugin
+# Containerless Custom Element Plugin for Aurelia Apps 
 
-[![ZenHub](https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png)](https://zenhub.io)
-[![Join the chat at https://gitter.im/aurelia/discuss](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/aurelia/discuss?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-This skeleton is part of the [Aurelia](http://www.aurelia.io/) platform. It sets up a standard aurelia plugin using gulp to build your ES6 code with the Babel compiler. Karma/Jasmine testing is also configured.
-
-> To keep up to date on [Aurelia](http://www.aurelia.io/), please visit and subscribe to [the official blog](http://blog.aurelia.io/) and [our email list](http://eepurl.com/ces50j). We also invite you to [follow us on twitter](https://twitter.com/aureliaeffect). If you have questions, please [join our community on Gitter](https://gitter.im/aurelia/discuss) or use [stack overflow](http://stackoverflow.com/search?q=aurelia). Documentation can be found [in our developer hub](http://aurelia.io/hub.html). If you would like to have deeper insight into our development process, please install the [ZenHub](https://zenhub.io) Chrome or Firefox Extension and visit any of our repository's boards.
+If you are converting an App written in Durandal into Aurelia then this plugin could be of use. Knockout provided a virtual binding that allowed containerless binding around elements that Aurelia does not support. In all honestly this functionality should not be needed and code that is written in a way that Aurelia does not support should likely be refactored. Regardless, this is not always feasible so I created this custom `<void></void>` element to serve as a replacement for `<!-- ko --><!-- /ko -->`
 
 ## Building The Code
 
@@ -31,28 +26,82 @@ To build the code, follow these steps.
 
 6. See `gulpfile.js` for other tasks related to generating the docs and linting.
 
-## Running The Tests
+## Using the Custom Element
+This element is a one-to-one replacement for `<!-- ko --><!-- /ko -->`.
 
-To run the unit tests, first ensure that you have followed the steps above in order to install all dependencies and successfully build the library. Once you have done that, proceed with these additional steps:
+### The Basics
 
-1. Ensure that the [Karma](http://karma-runner.github.io/) CLI is installed. If you need to install it, use the following command:
+`if` Binding:
 
-  ```shell
-  npm install -g karma-cli
-  ```
-2. Ensure that [jspm](http://jspm.io/) is installed. If you need to install it, use the following commnand:
+Knockout Virtual Binding:
 
-  ```shell
-  npm install -g jspm
-  ```
-3. Install the client-side dependencies with jspm:
+```html
+<ul class="list">
+  <!-- ko if: showFruit -->
+  <li class="fruit"></li>
+  <li>Apple</li>
+  <li>Banana</li>
+  <li>Kiwi</li>
+  <!-- /ko -->
+  <li class="Meat"></li>
+  <li>Pork</li>
+  <li>Beef</li>
+  <li>Chicken</li>
+</ul>
+```
 
-  ```shell
-  jspm install
-  ```
+Custom Aurelia Void Element:
 
-4. You can now run the tests with this command:
+```html
+<ul class="list">
+  <void if.bind="showFruit">
+  <li class="fruit"></li>
+  <li>Apple</li>
+  <li>Banana</li>
+  <li>Kiwi</li>
+  </void>
+  <li class="Meat"></li>
+  <li>Pork</li>
+  <li>Beef</li>
+  <li>Chicken</li>
+</ul>
+```
 
-  ```shell
-  karma start
-  ```
+
+`for-each` Binding: (Bad example but it works)
+
+Knockout Virtual Binding:
+
+```html
+<nav class="navbar">
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-bind="click: onHomeClick">Home</a>
+    </li>
+    <!-- ko foreach: { data: actions, as: 'action' } -->
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bind="click: action.onClick, text: action.label"></a>
+      </li>
+      <li class="spacer"></li>
+    <!-- /ko -->
+    </ul>
+</nav>
+```
+
+Custom Aurelia Void Element:
+
+```html
+<nav class="navbar">
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="#" click.delegate="onHomeClick">Home</a>
+    </li>
+    <void repeat.for="action of actions">
+      <li class="nav-item">
+        <a class="nav-link" href="#" click.delegate="action.onClick" text.band="action.label"></a>
+      </li>
+      <li class="spacer"></li>
+    </void>
+    </ul>
+</nav>
+```
